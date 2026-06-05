@@ -133,6 +133,36 @@ export async function onRequest(context) {
       newsList.push(newArticle);
       await kv.put('news_data', JSON.stringify(newsList));
 
+      // Telegram Bildirimi Gönder
+      const botToken = env.TELEGRAM_BOT_TOKEN;
+      const chatId = env.TELEGRAM_CHAT_ID;
+      if (botToken && chatId) {
+        try {
+          const portalUrl = url.origin;
+          const detailUrl = `${portalUrl}/haber.html?id=${newArticle.id}`;
+          const messageText = 
+            `📰 <b>Yeni Haber Portala Eklendi!</b>\n\n` +
+            `📌 <b>${newArticle.title}</b>\n` +
+            `📂 Kategori: ${newArticle.category}\n` +
+            `📅 Tarih: ${newArticle.date}\n\n` +
+            `🔗 <a href="${detailUrl}">Sitede Görüntüle</a>`;
+            
+          const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+          await fetch(telegramUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: messageText,
+              parse_mode: 'HTML',
+              disable_web_page_preview: false
+            })
+          });
+        } catch (tgErr) {
+          console.error('Telegram bildirimi gönderilemedi:', tgErr);
+        }
+      }
+
       return new Response(JSON.stringify({ success: true, data: newArticle }), { status: 200, headers });
     } catch (e) {
       return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
