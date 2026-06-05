@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mersin Manşet | Yazar Paneli</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Styling -->
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body class="dashboard-body">
+
+  <div class="dashboard-container">
+    
+    <!-- SIDEBAR -->
+    <aside class="dash-sidebar">
+      <a href="index.html" class="dash-logo">
+        <i class="fa-solid fa-newspaper"></i>
+        <span>Mersin Manşet</span>
+      </a>
+      <ul class="dash-menu">
+        <li class="dash-menu-item active">
+          <a href="#"><i class="fa-solid fa-plus"></i> Haber Ekle</a>
+        </li>
+        <li class="dash-menu-item">
+          <a href="index.html"><i class="fa-solid fa-home"></i> Siteye Dön</a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dash-content">
+      
+      <div class="dash-header">
+        <div>
+          <h1>Haber Giriş Paneli</h1>
+          <p style="color: var(--text-muted); margin: 4px 0 0 0; font-size: 14px;">Mersin Manşet haber portalı yönetim ve paylaşım arayüzü</p>
+        </div>
+        <a href="index.html" class="btn-view-site" target="_blank">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Canlı Siteyi Aç
+        </a>
+      </div>
+
+      <div class="dash-grid">
+        
+        <!-- LEFT: ADD NEWS FORM -->
+        <section class="dash-card">
+          <!-- AI Loading Overlay -->
+          <div id="aiLoadingOverlay" class="ai-loading-overlay">
+            <div class="ai-spinner"></div>
+            <div class="ai-loading-text">
+              <span>Yapay Zeka Görseli Analiz Ediyor...</span>
+              <span class="ai-loading-subtext">Haber başlığı, özeti ve detayları otomatik yazılıyor.</span>
+            </div>
+          </div>
+
+          <h2><i class="fa-solid fa-pen-nib"></i> Yeni Haber Yayınla</h2>
+          <form id="newsForm">
+            <!-- Drag and Drop Zone -->
+            <div class="form-group">
+              <label>Haber Görseli (Sürükle Bırak, Seç veya Yapıştır)</label>
+              <div id="dropZone" class="drop-zone">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p>Görseli buraya sürükleyin, tıklayarak seçin veya yapıştırın</p>
+                <span style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">PNG, JPG veya JPEG (Otomatik Yapay Zeka Desteği)</span>
+                <input type="text" id="pasteInput" placeholder="Görsel yapıştırmak için buraya tıklayıp CTRL+V yapın" class="form-control" style="font-size: 12px; text-align: center; border: 1.5px dashed var(--border-dash); background: rgba(15, 23, 42, 0.6); color: #fff; max-width: 320px; width: 100%; cursor: pointer;" readonly />
+                <input type="file" id="fileInput" accept="image/*" style="display: none;" />
+              </div>
+              <div id="previewContainer" class="preview-container" style="display: none;">
+                <img id="imagePreview" src="" alt="Haber Görseli" />
+                <button type="button" id="removeImageBtn" class="btn-remove-img"><i class="fa-solid fa-trash-can"></i> Görseli Kaldır</button>
+              </div>
+            </div>
+
+            <div class="form-group" style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+              <div>
+                <label for="category">Kategori</label>
+                <select id="category" class="form-control" required>
+                  <option value="Güncel">Güncel</option>
+                  <option value="Yerel">Yerel</option>
+                  <option value="Siyaset">Siyaset</option>
+                  <option value="Ekonomi">Ekonomi</option>
+                  <option value="Spor">Spor</option>
+                  <option value="Eğitim">Eğitim</option>
+                  <option value="Sağlık">Sağlık</option>
+                  <option value="Dünya">Dünya</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="title">Haber Başlığı</label>
+              <input type="text" id="title" class="form-control" placeholder="Haber başlığı (Görsel yüklediğinizde otomatik doldurulur)..." required />
+            </div>
+
+            <div class="form-group">
+              <label for="excerpt">Kısa Özet (Facebook Gönderisinde Görünür)</label>
+              <input type="text" id="excerpt" class="form-control" placeholder="Haberin kısa açıklaması (Görsel yüklediğinizde otomatik doldurulur)..." required />
+            </div>
+
+            <div class="form-group">
+              <label for="content">Haber İçeriği (Detaylar)</label>
+              <textarea id="content" class="form-control" placeholder="Haber detayları (Görsel yüklediğinizde otomatik doldurulur)..." required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-checkbox">
+                <input type="checkbox" id="postToFb" checked />
+                <span>Haberi Facebook Sayfamda Otomatik Paylaş (www.facebook.com/halkompleksi33)</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">
+              <i class="fa-solid fa-paper-plane"></i> Haberi Yayınla ve Paylaş
+            </button>
+          </form>
+        </section>
+
+        <!-- RIGHT: FACEBOOK CONFIG & STATUS -->
+        <aside class="dash-card">
+          <h2><i class="fa-brands fa-facebook"></i> Facebook Entegrasyonu</h2>
+          <div class="widget-fb-info">
+            <div class="fb-badge">
+              <i class="fa-solid fa-link"></i> Hedef: <a href="https://www.facebook.com/halkompleksi33" class="fb-page-link" target="_blank">halkompleksi33</a>
+            </div>
+            <p>
+              Yayınlanan haberler otomatik olarak bu Facebook sayfasının duvarında paylaşılır.
+            </p>
+            <div style="border-top: 1px solid var(--border-dash); padding-top: 16px;">
+              <h4 style="font-size: 13px; color: #fff; margin-bottom: 8px;">⚙️ Gerçek Bağlantı Kurulumu:</h4>
+              <p style="font-size: 12px; line-height: 1.5;">
+                Real-time paylaşım ve yapay zeka haber üretimi için Netlify panelinizde **Environment Variables** (Ortam Değişkenleri) kısmına şu parametreleri eklemelisiniz:
+              </p>
+              <code style="display:block; background:#0f172a; padding:10px; border-radius:6px; margin:10px 0; font-size:11px; word-break:break-all; border:1px solid var(--border-dash);">
+                GEMINI_API_KEY = [GEMINI API ANAHTARINIZ]<br>
+                FACEBOOK_PAGE_ID = halkompleksi33<br>
+                FACEBOOK_PAGE_ACCESS_TOKEN = [TOKENİNİZ]
+              </code>
+              <p style="font-size: 11px; color:#38bdf8;">
+                *Not: Ücretsiz Gemini API anahtarını <strong>aistudio.google.com</strong> adresinden hemen alabilirsiniz.
+              </p>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+
+      <!-- BOTTOM: RECENTLY PUBLISHED ARTICLES -->
+      <section class="articles-table-wrap">
+        <h3>Eklenen Son Haberler</h3>
+        <div class="dash-card" style="padding: 10px;">
+          <table class="articles-table">
+            <thead>
+              <tr>
+                <th>Tarih</th>
+                <th>Başlık</th>
+                <th>Kategori</th>
+                <th>Facebook Paylaşımı</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="articlesList">
+              <!-- JS ile doldurulacak -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast">
+    <i class="fa-solid"></i>
+    <span id="toastMsg"></span>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const newsForm = document.getElementById('newsForm');
+      const articlesList = document.getElementById('articlesList');
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      const aiLoadingOverlay = document.getElementById('aiLoadingOverlay');
+
+      // Drag and Drop Elements
+      const dropZone = document.getElementById('dropZone');
+      const fileInput = document.getElementById('fileInput');
+      const previewContainer = document.getElementById('previewContainer');
+      const imagePreview = document.getElementById('imagePreview');
+      const removeImageBtn = document.getElementById('removeImageBtn');
+
+      let uploadedImageBase64 = '';
+
+      // Toast gösterici
+      function showToast(msg, isSuccess = true) {
+        toast.className = 'toast ' + (isSuccess ? 'toast-success show' : 'toast-error show');
+        toast.querySelector('i').className = 'fa-solid ' + (isSuccess ? 'fa-circle-check' : 'fa-circle-xmark');
+        toastMsg.textContent = msg;
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 4000);
+      }
+
+      // Drag over effect
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      });
+
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          handleFile(files[0]);
+        }
+      });
+
+      dropZone.addEventListener('click', () => {
+        fileInput.click();
+      });
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+          handleFile(fileInput.files[0]);
+        }
+      });
+
+      const pasteInput = document.getElementById('pasteInput');
+
+      pasteInput.addEventListener('click', (e) => {
+        e.stopPropagation(); // Dosya seçicisinin açılmasını engelle, sadece odağı buraya al
+        pasteInput.focus();
+        pasteInput.placeholder = "Şimdi CTRL+V ile görseli yapıştırın...";
+      });
+
+      pasteInput.addEventListener('blur', () => {
+        pasteInput.placeholder = "Görsel yapıştırmak için buraya tıklayıp CTRL+V yapın";
+      });
+
+      // Pano yapıştırma (Paste) olayı hem input hem de pencere genelinde dinlenir
+      const handlePasteEvent = (e) => {
+        const items = e.clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].type.indexOf('image') !== -1) {
+            const file = items[i].getAsFile();
+            handleFile(file);
+            showToast('Görsel panodan başarıyla yapıştırıldı!', true);
+            break;
+          }
+        }
+      };
+
+      pasteInput.addEventListener('paste', handlePasteEvent);
+      window.addEventListener('paste', handlePasteEvent);
+
+      removeImageBtn.addEventListener('click', () => {
+        uploadedImageBase64 = '';
+        imagePreview.src = '';
+        previewContainer.style.display = 'none';
+        dropZone.style.display = 'flex';
+        fileInput.value = '';
+      });
+
+      // Resmi Canvas ile Sıkıştırma ve Base64'e Çevirme
+      function handleFile(file) {
+        if (!file.type.startsWith('image/')) {
+          showToast('Lütfen geçerli bir görsel dosyası seçin!', false);
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const img = new Image();
+          img.onload = function() {
+            // Sıkıştırma için canvas oluştur
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 600;
+            const MAX_HEIGHT = 450;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // 0.7 kalitesinde JPEG olarak çıktı al
+            uploadedImageBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+            // Arayüz güncelle
+            imagePreview.src = uploadedImageBase64;
+            dropZone.style.display = 'none';
+            previewContainer.style.display = 'flex';
+
+            // Yapay Zekayı tetikle
+            generateAIExtractedNews(uploadedImageBase64);
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // Yapay Zeka Haber Üretimi API çağrısı
+      async function generateAIExtractedNews(base64Image) {
+        aiLoadingOverlay.style.display = 'flex';
+        showToast('Yapay Zeka görseli analiz ediyor, haber yazılıyor...', true);
+
+        try {
+          const response = await fetch('/api/generate-news', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ base64Image })
+          });
+
+          const result = await response.json();
+
+          if (result.success && result.data) {
+            const { title, category, excerpt, content } = result.data;
+            document.getElementById('title').value = title;
+            document.getElementById('category').value = category;
+            document.getElementById('excerpt').value = excerpt;
+            document.getElementById('content').value = content;
+            showToast('Yapay Zeka haberi yazdı! Lütfen kontrol edin.', true);
+          } else {
+            const errorMsg = result.error ? (typeof result.error === 'object' ? (result.error.message || JSON.stringify(result.error)) : result.error) : 'Sunucu yanıt vermedi';
+            showToast('Yapay zeka haber üretimi başarısız oldu: ' + errorMsg, false);
+          }
+        } catch (error) {
+          showToast('Yapay zeka haber üretimi başarısız oldu: Sunucuya bağlanılamadı.', false);
+        } finally {
+          aiLoadingOverlay.style.display = 'none';
+        }
+      }
+
+      // Haberleri API ve LocalStorage'dan ortaklaşa oku ve listele
+      async function loadArticles() {
+        articlesList.innerHTML = '';
+        let apiNews = [];
+        
+        try {
+          const response = await fetch('/api/news');
+          const result = await response.json();
+          if (result.success && Array.isArray(result.data)) {
+            apiNews = result.data;
+          }
+        } catch (e) {
+          console.warn('API\'den haber listesi çekilemedi, lokal veri kullanılacak:', e);
+        }
+
+        const localNews = JSON.parse(localStorage.getItem('local_news') || '[]');
+        
+        // İki listeyi birleştir (id'si mükerrer olanları filtreleyerek)
+        const allNews = [...apiNews];
+        localNews.forEach(localItem => {
+          if (!allNews.some(item => item.id === localItem.id)) {
+            allNews.push(localItem);
+          }
+        });
+
+        if (allNews.length === 0) {
+          articlesList.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Henüz eklenmiş haber bulunmuyor.</td></tr>`;
+          return;
+        }
+
+        // En yeni haber üstte görünecek şekilde sırala
+        allNews.reverse().forEach((item) => {
+          const tr = document.createElement('tr');
+          const isSystemNews = ['1', '2', '3', '4', '5', '6'].includes(item.id);
+          tr.innerHTML = `
+            <td>${item.date}</td>
+            <td style="font-weight: 600;">${item.title}</td>
+            <td><span class="badge-cat">${item.category}</span></td>
+            <td>
+              <span class="badge-status ${item.fbPosted ? 'status-posted' : 'status-local'}">
+                <i class="fa-solid ${item.fbPosted ? 'fa-check' : 'fa-hourglass'}"></i>
+                ${item.fbPosted ? 'Paylaşıldı' : 'Sadece Sitede'}
+              </span>
+            </td>
+            <td>
+              ${isSystemNews ? 
+                `<span style="color:var(--text-muted); font-size:11px;">Sistem Haberi</span>` : 
+                `<button onclick="deleteArticle('${item.id}')" style="background:none; border:none; color:var(--primary); cursor:pointer;" title="Haberi Sil">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>`
+              }
+            </td>
+          `;
+          articlesList.appendChild(tr);
+        });
+      }
+
+      // Haber silme
+      window.deleteArticle = async function(id) {
+        // Önce API'den silmeyi dene
+        let deletedFromApi = false;
+        try {
+          const response = await fetch(`/api/news?id=${id}`, {
+            method: 'DELETE'
+          });
+          const result = await response.json();
+          if (result.success) {
+            deletedFromApi = true;
+          }
+        } catch (e) {
+          console.warn('API\'den silme işlemi başarısız, lokal hafızadan silinecek:', e);
+        }
+
+        // LocalStorage'dan da temizle (her iki tarafta da varsa)
+        const news = JSON.parse(localStorage.getItem('local_news') || '[]');
+        const filtered = news.filter(item => item.id !== id);
+        localStorage.setItem('local_news', JSON.stringify(filtered));
+
+        loadArticles();
+        showToast(deletedFromApi ? 'Haber başarıyla veritabanından silindi!' : 'Haber yerel tarayıcı hafızasından silindi!');
+      };
+
+      // Form Gönderme
+      newsForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const title = document.getElementById('title').value.trim();
+        const category = document.getElementById('category').value;
+        const excerpt = document.getElementById('excerpt').value.trim();
+        const content = document.getElementById('content').value.trim();
+        const postToFb = document.getElementById('postToFb').checked;
+
+        // Görsel belirlenmesi (Seçilmiş görsel base64 yoksa varsayılan placeholder)
+        const image = uploadedImageBase64 || 'images/hero.png';
+
+        const newArticle = {
+          id: Date.now().toString(),
+          title,
+          category,
+          image,
+          excerpt,
+          content,
+          date: new Date().toLocaleString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+          fbPosted: false
+        };
+
+        // Facebook API'ye gönder (Eğer seçildiyse)
+        if (postToFb) {
+          showToast('Facebook sayfasına yükleniyor...', true);
+          try {
+            const response = await fetch('/api/post-to-facebook', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                title: title,
+                excerpt: excerpt,
+                url: window.location.origin
+              })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+              newArticle.fbPosted = true;
+              showToast('Facebook paylaşımı yapıldı!');
+            } else {
+              newArticle.fbPosted = false;
+              showToast(result.message || 'Facebook jetonu eksik olduğundan paylaşım simüle edildi.', false);
+            }
+          } catch (err) {
+            newArticle.fbPosted = false;
+            showToast('Facebook bağlantı hatası oluştu.', false);
+          }
+        }
+
+        // API (KV) veritabanına kaydet
+        let savedToApi = false;
+        try {
+          const apiResponse = await fetch('/api/news', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newArticle)
+          });
+          const apiResult = await apiResponse.json();
+          if (apiResult.success) {
+            savedToApi = true;
+          }
+        } catch (e) {
+          console.warn('API kaydı başarısız, lokale yazılacak:', e);
+        }
+
+        // API'ye yazılmadıysa local storage fallback kullan
+        if (!savedToApi) {
+          const news = JSON.parse(localStorage.getItem('local_news') || '[]');
+          news.push(newArticle);
+          localStorage.setItem('local_news', JSON.stringify(news));
+          showToast('Bağlantı/KV yok: Haber tarayıcı hafızasına (Local) kaydedildi.', false);
+        } else {
+          showToast('Haber başarıyla veritabanında yayınlandı! 🎉');
+        }
+
+        // Formu temizle, görseli sıfırla ve listeyi yenile
+        newsForm.reset();
+        uploadedImageBase64 = '';
+        imagePreview.src = '';
+        previewContainer.style.display = 'none';
+        dropZone.style.display = 'flex';
+        fileInput.value = '';
+        loadArticles();
+      });
+
+      // İlk yükleme
+      loadArticles();
+    });
+  </script>
+</body>
+</html>
