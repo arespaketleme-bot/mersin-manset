@@ -1,0 +1,11 @@
+{
+  "name": "mersin-manset",
+  "version": "1.0.0",
+  "description": "Mersin Manşet web site - Cloudflare Workers deployment",
+  "scripts": {
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.101.0"
+  }
+}
