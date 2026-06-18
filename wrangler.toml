@@ -5,5 +5,15 @@ workers_dev = true
 compatibility_date = "2024-01-01"
 main = "index.js"
 
+[[kv_namespaces]]
+binding = "ASSETS"
+# Dummy IDs for local dev; will be replaced on production deploy
+id = "dummy-id"
+preview_id = "dummy-preview-id"
+
 [site]
 bucket = "./"
+
+[dev]
+port = 8787
+host = "127.0.0.1"
